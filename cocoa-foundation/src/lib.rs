@@ -7,29 +7,17 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![crate_name = "core_text"]
-#![crate_type = "rlib"]
-
 #![allow(non_snake_case)]
 
-/*!
-Many of these functions will add objects to the autorelease pool.
-If you don't have one this will cause leaks.
-*/
-
+extern crate block;
+#[macro_use]
+extern crate bitflags;
+extern crate core_foundation;
+extern crate core_graphics_types;
 extern crate foreign_types;
 extern crate libc;
-
 #[macro_use]
-extern crate core_foundation;
-extern crate core_graphics;
+extern crate objc;
 
-pub mod font;
-pub mod font_collection;
-pub mod font_descriptor;
-pub mod font_manager;
-pub mod frame;
-pub mod framesetter;
-pub mod line;
-pub mod run;
-pub mod string_attributes;
+pub mod base;
+pub mod foundation;

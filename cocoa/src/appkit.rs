@@ -987,6 +987,7 @@ pub trait NSWindow: Sized {
     unsafe fn setLevel_(self, level: NSInteger);
 
     // Managing Key Status
+    unsafe fn isKeyWindow(self) -> BOOL;
     unsafe fn canBecomeKeyWindow(self) -> BOOL;
     unsafe fn makeKeyWindow(self);
     unsafe fn makeKeyAndOrderFront_(self, sender: id);
@@ -1480,6 +1481,10 @@ impl NSWindow for id {
 
     // Managing Key Status
 
+    unsafe fn isKeyWindow(self) -> BOOL {
+        msg_send![self, isKeyWindow]
+    }
+
     unsafe fn canBecomeKeyWindow(self) -> BOOL {
         msg_send![self, canBecomeKeyWindow]
     }
@@ -1769,6 +1774,23 @@ impl NSWindow for id {
     // TODO: Constraint-Based Layouts
 }
 
+#[repr(usize)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum NSViewLayerContentsPlacement {
+    NSViewLayerContentsPlacementScaleAxesIndependently = 0,
+    NSViewLayerContentsPlacementScaleProportionallyToFit = 1,
+    NSViewLayerContentsPlacementScaleProportionallyToFill = 2,
+    NSViewLayerContentsPlacementCenter = 3,
+    NSViewLayerContentsPlacementTop = 4,
+    NSViewLayerContentsPlacementTopRight = 5,
+    NSViewLayerContentsPlacementRight = 6,
+    NSViewLayerContentsPlacementBottomRight = 7,
+    NSViewLayerContentsPlacementBottom = 8,
+    NSViewLayerContentsPlacementBottomLeft = 9,
+    NSViewLayerContentsPlacementLeft = 10,
+    NSViewLayerContentsPlacementTopLeft = 11,
+}
+
 pub trait NSView: Sized {
     unsafe fn alloc(_: Self) -> id {
         msg_send![class!(NSView), alloc]
@@ -1796,6 +1818,9 @@ pub trait NSView: Sized {
     unsafe fn widthAnchor(self) -> id;
     unsafe fn heightAnchor(self) -> id;
     unsafe fn convertRectToBacking(self, rect: NSRect) -> NSRect;
+
+    unsafe fn layerContentsPlacement(self) -> NSViewLayerContentsPlacement;
+    unsafe fn setLayerContentsPlacement(self, placement: NSViewLayerContentsPlacement);
 }
 
 impl NSView for id {
@@ -1814,13 +1839,13 @@ impl NSView for id {
     unsafe fn frame(self) -> NSRect {
         msg_send![self, frame]
     }
-  
+
     unsafe fn setFrameSize(self, frameSize: NSSize) {
-        msg_send![self, setFrameSize:frameSize]  
+        msg_send![self, setFrameSize:frameSize]
     }
-  
+
     unsafe fn setFrameOrigin(self, frameOrigin: NSPoint) {
-        msg_send![self, setFrameOrigin:frameOrigin]  
+        msg_send![self, setFrameOrigin:frameOrigin]
     }
 
     unsafe fn display_(self) {
@@ -1877,6 +1902,14 @@ impl NSView for id {
 
     unsafe fn convertRectToBacking(self, rect: NSRect) -> NSRect {
         msg_send![self, convertRectToBacking:rect]
+    }
+
+    unsafe fn layerContentsPlacement(self) -> NSViewLayerContentsPlacement {
+        msg_send![self, layerContentsPlacement]
+    }
+
+    unsafe fn setLayerContentsPlacement(self, placement: NSViewLayerContentsPlacement) {
+        msg_send![self, setLayerContentsPlacement: placement]
     }
 }
 
@@ -2978,7 +3011,7 @@ pub trait NSButton: Sized {
          msg_send![class!(NSButton), alloc]
      }
      unsafe fn initWithFrame_(self, frameRect: NSRect) -> id;
-     unsafe fn setTarget_(self, target: id /* Instance */); 
+     unsafe fn setTarget_(self, target: id /* Instance */);
      unsafe fn setAction_(self, selector: objc::runtime::Sel /* (Instance *) */);
 }
 
@@ -3655,7 +3688,7 @@ pub trait NSTabView: Sized {
     unsafe fn allowsTruncatedLabels(self) -> BOOL;
     unsafe fn setAllowsTruncatedLabels_(self, allowTruncatedLabels:BOOL);
     unsafe fn setDelegate_(self, delegate:id);
-    unsafe fn delegate(self) -> id ;
+    unsafe fn delegate(self) -> id;
     unsafe fn tabViewAtPoint_(self, point:id) -> id;
 }
 
